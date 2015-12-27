@@ -409,6 +409,10 @@ func writesym(ctxt *Link, b *Biobuf, s *LSym) {
 	wrsym(b, s.Gotype)
 	wrdata(b, s.P)
 
+	if ctxt.Debugasm != 0 {
+		fmt.Printf("s.P: %#v\n", s.P)
+	}
+	
 	wrint(b, int64(len(s.R)))
 	var r *Reloc
 	for i := 0; i < len(s.R); i++ {

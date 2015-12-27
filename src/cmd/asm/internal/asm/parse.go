@@ -72,7 +72,7 @@ func (p *Parser) errorf(format string, args ...interface{}) {
 	args = append([]interface{}{p.lex.File(), p.lineNum}, args...)
 	fmt.Fprintf(os.Stderr, format, args...)
 	p.errorCount++
-	if p.errorCount > 10 {
+	if p.errorCount > 100 {
 		log.Fatal("too many errors")
 	}
 }

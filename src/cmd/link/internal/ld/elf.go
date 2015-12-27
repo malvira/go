@@ -2426,6 +2426,9 @@ elfobj:
 
 	if Linkmode != LinkExternal {
 		eh.entry = uint64(Entryvalue())
+		if eh.machine == EM_ARM {
+			eh.entry |= 0x1 // set low bit for thumb
+		}
 	}
 
 	eh.version = EV_CURRENT

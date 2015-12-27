@@ -66,47 +66,52 @@ const (
 
 var optab = []Optab{
 	/* struct Optab:
-	OPCODE,	from, prog->reg, to,		 type,size,param,flag */
+	      OPCODE,	from, prog->reg, to,		 type,size,param,flag */
 	Optab{obj.ATEXT, C_ADDR, C_NONE, C_TEXTSIZE, 0, 0, 0, 0, 0},
-	Optab{AADD, C_REG, C_REG, C_REG, 1, 4, 0, 0, 0},
-	Optab{AADD, C_REG, C_NONE, C_REG, 1, 4, 0, 0, 0},
-	Optab{AMOVW, C_REG, C_NONE, C_REG, 1, 4, 0, 0, 0},
-	Optab{AMVN, C_REG, C_NONE, C_REG, 1, 4, 0, 0, 0},
-	Optab{ACMP, C_REG, C_REG, C_NONE, 1, 4, 0, 0, 0},
-	Optab{AADD, C_RCON, C_REG, C_REG, 2, 4, 0, 0, 0},
-	Optab{AADD, C_RCON, C_NONE, C_REG, 2, 4, 0, 0, 0},
-	Optab{AMOVW, C_RCON, C_NONE, C_REG, 2, 4, 0, 0, 0},
-	Optab{AMVN, C_RCON, C_NONE, C_REG, 2, 4, 0, 0, 0},
-	Optab{ACMP, C_RCON, C_REG, C_NONE, 2, 4, 0, 0, 0},
-	Optab{AADD, C_SHIFT, C_REG, C_REG, 3, 4, 0, 0, 0},
-	Optab{AADD, C_SHIFT, C_NONE, C_REG, 3, 4, 0, 0, 0},
-	Optab{AMVN, C_SHIFT, C_NONE, C_REG, 3, 4, 0, 0, 0},
-	Optab{ACMP, C_SHIFT, C_REG, C_NONE, 3, 4, 0, 0, 0},
-	Optab{AMOVW, C_RACON, C_NONE, C_REG, 4, 4, REGSP, 0, 0},
-	Optab{AB, C_NONE, C_NONE, C_SBRA, 5, 4, 0, LPOOL, 0},
-	Optab{ABL, C_NONE, C_NONE, C_SBRA, 5, 4, 0, 0, 0},
-	Optab{ABX, C_NONE, C_NONE, C_SBRA, 74, 20, 0, 0, 0},
-	Optab{ABEQ, C_NONE, C_NONE, C_SBRA, 5, 4, 0, 0, 0},
-	Optab{ABEQ, C_RCON, C_NONE, C_SBRA, 5, 4, 0, 0, 0}, // prediction hinted form, hint ignored
 
-	Optab{AB, C_NONE, C_NONE, C_ROREG, 6, 4, 0, LPOOL, 0},
-	Optab{ABL, C_NONE, C_NONE, C_ROREG, 7, 4, 0, 0, 0},
-	Optab{ABL, C_REG, C_NONE, C_ROREG, 7, 4, 0, 0, 0},
+	Optab{AMOVW, C_NCON, C_NONE, C_REG, 12, 2, 0, 0, 0},
+	Optab{AMOVW, C_REG, C_NONE, C_REG, 1, 2, 0, 0, 0},
+	
+
+	Optab{AADD, C_REG, C_REG, C_REG, 1, 2, 0, 0, 0},
+	Optab{AADD, C_REG, C_NONE, C_REG, 1, 2, 0, 0, 0},
+	Optab{AMVN, C_REG, C_NONE, C_REG, 1, 2, 0, 0, 0},
+	Optab{ACMP, C_REG, C_REG, C_NONE, 1, 2, 0, 0, 0},
+	Optab{AADD, C_RCON, C_REG, C_REG, 2, 2, 0, 0, 0},
+	Optab{AADD, C_RCON, C_NONE, C_REG, 2, 2, 0, 0, 0},
+	Optab{AMOVW, C_RCON, C_NONE, C_REG, 2, 2, 0, 0, 0},
+	Optab{AMVN, C_RCON, C_NONE, C_REG, 2, 2, 0, 0, 0},
+	Optab{ACMP, C_RCON, C_REG, C_NONE, 2, 2, 0, 0, 0},
+	Optab{AADD, C_SHIFT, C_REG, C_REG, 3, 2, 0, 0, 0},
+	Optab{AADD, C_SHIFT, C_NONE, C_REG, 3, 2, 0, 0, 0},
+	Optab{AMVN, C_SHIFT, C_NONE, C_REG, 3, 2, 0, 0, 0},
+	Optab{ACMP, C_SHIFT, C_REG, C_NONE, 3, 2, 0, 0, 0},
+	Optab{AMOVW, C_RACON, C_NONE, C_REG, 4, 2, REGSP, 0, 0},
+	Optab{AB, C_NONE, C_NONE, C_SBRA, 5, 2, 0, LPOOL, 0},
+	Optab{ABL, C_NONE, C_NONE, C_SBRA, 5, 2, 0, 0, 0},
+	Optab{ABX, C_NONE, C_NONE, C_SBRA, 74, 20, 0, 0, 0},
+	Optab{ABEQ, C_NONE, C_NONE, C_SBRA, 5, 2, 0, 0, 0},
+	Optab{ABEQ, C_RCON, C_NONE, C_SBRA, 5, 2, 0, 0, 0}, // prediction hinted form, hint ignored
+
+	Optab{AB, C_NONE, C_NONE, C_ROREG, 6, 2, 0, LPOOL, 0},
+	Optab{ABL, C_NONE, C_NONE, C_ROREG, 7, 2, 0, 0, 0},
+	Optab{ABL, C_REG, C_NONE, C_ROREG, 7, 2, 0, 0, 0},
 	Optab{ABX, C_NONE, C_NONE, C_ROREG, 75, 12, 0, 0, 0},
 	Optab{ABXRET, C_NONE, C_NONE, C_ROREG, 76, 4, 0, 0, 0},
-	Optab{ASLL, C_RCON, C_REG, C_REG, 8, 4, 0, 0, 0},
-	Optab{ASLL, C_RCON, C_NONE, C_REG, 8, 4, 0, 0, 0},
-	Optab{ASLL, C_REG, C_NONE, C_REG, 9, 4, 0, 0, 0},
-	Optab{ASLL, C_REG, C_REG, C_REG, 9, 4, 0, 0, 0},
-	Optab{ASWI, C_NONE, C_NONE, C_NONE, 10, 4, 0, 0, 0},
-	Optab{ASWI, C_NONE, C_NONE, C_LOREG, 10, 4, 0, 0, 0},
-	Optab{ASWI, C_NONE, C_NONE, C_LCON, 10, 4, 0, 0, 0},
-	Optab{AWORD, C_NONE, C_NONE, C_LCON, 11, 4, 0, 0, 0},
-	Optab{AWORD, C_NONE, C_NONE, C_LCONADDR, 11, 4, 0, 0, 0},
-	Optab{AWORD, C_NONE, C_NONE, C_ADDR, 11, 4, 0, 0, 0},
-	Optab{AMOVW, C_NCON, C_NONE, C_REG, 12, 4, 0, 0, 0},
-	Optab{AMOVW, C_LCON, C_NONE, C_REG, 12, 4, 0, LFROM, 0},
-	Optab{AMOVW, C_LCONADDR, C_NONE, C_REG, 12, 4, 0, LFROM | LPCREL, 4},
+	Optab{ASLL, C_RCON, C_REG, C_REG, 8, 2, 0, 0, 0},
+	Optab{ASLL, C_RCON, C_NONE, C_REG, 8, 2, 0, 0, 0},
+	Optab{ASLL, C_REG, C_NONE, C_REG, 9, 2, 0, 0, 0},
+	Optab{ASLL, C_REG, C_REG, C_REG, 9, 2, 0, 0, 0},
+	Optab{ASWI, C_NONE, C_NONE, C_NONE, 10, 2, 0, 0, 0},
+	Optab{ASWI, C_NONE, C_NONE, C_LOREG, 10, 2, 0, 0, 0},
+	Optab{ASWI, C_NONE, C_NONE, C_LCON, 10, 2, 0, 0, 0},
+	Optab{AWORD, C_NONE, C_NONE, C_LCON, 11, 2, 0, 0, 0},
+	Optab{AWORD, C_NONE, C_NONE, C_LCONADDR, 11, 2, 0, 0, 0},
+	Optab{AWORD, C_NONE, C_NONE, C_ADDR, 11, 2, 0, 0, 0},
+
+	Optab{AMOVW, C_LCON, C_NONE, C_REG, 12, 2, 0, LFROM, 0},
+	Optab{AMOVW, C_LCONADDR, C_NONE, C_REG, 12, 2, 0, LFROM | LPCREL, 4},
+
 	Optab{AADD, C_NCON, C_REG, C_REG, 13, 8, 0, 0, 0},
 	Optab{AADD, C_NCON, C_NONE, C_REG, 13, 8, 0, 0, 0},
 	Optab{AMVN, C_NCON, C_NONE, C_REG, 13, 8, 0, 0, 0},
@@ -115,30 +120,30 @@ var optab = []Optab{
 	Optab{AADD, C_LCON, C_NONE, C_REG, 13, 8, 0, LFROM, 0},
 	Optab{AMVN, C_LCON, C_NONE, C_REG, 13, 8, 0, LFROM, 0},
 	Optab{ACMP, C_LCON, C_REG, C_NONE, 13, 8, 0, LFROM, 0},
-	Optab{AMOVB, C_REG, C_NONE, C_REG, 1, 4, 0, 0, 0},
+	Optab{AMOVB, C_REG, C_NONE, C_REG, 1, 2, 0, 0, 0},
 	Optab{AMOVBS, C_REG, C_NONE, C_REG, 14, 8, 0, 0, 0},
-	Optab{AMOVBU, C_REG, C_NONE, C_REG, 58, 4, 0, 0, 0},
+	Optab{AMOVBU, C_REG, C_NONE, C_REG, 58, 2, 0, 0, 0},
 	Optab{AMOVH, C_REG, C_NONE, C_REG, 1, 4, 0, 0, 0},
 	Optab{AMOVHS, C_REG, C_NONE, C_REG, 14, 8, 0, 0, 0},
 	Optab{AMOVHU, C_REG, C_NONE, C_REG, 14, 8, 0, 0, 0},
-	Optab{AMUL, C_REG, C_REG, C_REG, 15, 4, 0, 0, 0},
-	Optab{AMUL, C_REG, C_NONE, C_REG, 15, 4, 0, 0, 0},
-	Optab{ADIV, C_REG, C_REG, C_REG, 16, 4, 0, 0, 0},
-	Optab{ADIV, C_REG, C_NONE, C_REG, 16, 4, 0, 0, 0},
-	Optab{AMULL, C_REG, C_REG, C_REGREG, 17, 4, 0, 0, 0},
-	Optab{AMULA, C_REG, C_REG, C_REGREG2, 17, 4, 0, 0, 0},
-	Optab{AMOVW, C_REG, C_NONE, C_SAUTO, 20, 4, REGSP, 0, 0},
-	Optab{AMOVW, C_REG, C_NONE, C_SOREG, 20, 4, 0, 0, 0},
-	Optab{AMOVB, C_REG, C_NONE, C_SAUTO, 20, 4, REGSP, 0, 0},
-	Optab{AMOVB, C_REG, C_NONE, C_SOREG, 20, 4, 0, 0, 0},
-	Optab{AMOVBS, C_REG, C_NONE, C_SAUTO, 20, 4, REGSP, 0, 0},
-	Optab{AMOVBS, C_REG, C_NONE, C_SOREG, 20, 4, 0, 0, 0},
-	Optab{AMOVBU, C_REG, C_NONE, C_SAUTO, 20, 4, REGSP, 0, 0},
-	Optab{AMOVBU, C_REG, C_NONE, C_SOREG, 20, 4, 0, 0, 0},
-	Optab{AMOVW, C_SAUTO, C_NONE, C_REG, 21, 4, REGSP, 0, 0},
-	Optab{AMOVW, C_SOREG, C_NONE, C_REG, 21, 4, 0, 0, 0},
-	Optab{AMOVBU, C_SAUTO, C_NONE, C_REG, 21, 4, REGSP, 0, 0},
-	Optab{AMOVBU, C_SOREG, C_NONE, C_REG, 21, 4, 0, 0, 0},
+	Optab{AMUL, C_REG, C_REG, C_REG, 15, 2, 0, 0, 0},
+	Optab{AMUL, C_REG, C_NONE, C_REG, 15, 2, 0, 0, 0},
+	Optab{ADIV, C_REG, C_REG, C_REG, 16, 2, 0, 0, 0},
+	Optab{ADIV, C_REG, C_NONE, C_REG, 16, 2, 0, 0, 0},
+	Optab{AMULL, C_REG, C_REG, C_REGREG, 17, 2, 0, 0, 0},
+	Optab{AMULA, C_REG, C_REG, C_REGREG2, 17, 2, 0, 0, 0},
+	Optab{AMOVW, C_REG, C_NONE, C_SAUTO, 20, 2, REGSP, 0, 0},
+	Optab{AMOVW, C_REG, C_NONE, C_SOREG, 20, 2, 0, 0, 0},
+	Optab{AMOVB, C_REG, C_NONE, C_SAUTO, 20, 2, REGSP, 0, 0},
+	Optab{AMOVB, C_REG, C_NONE, C_SOREG, 20, 2, 0, 0, 0},
+	Optab{AMOVBS, C_REG, C_NONE, C_SAUTO, 20, 2, REGSP, 0, 0},
+	Optab{AMOVBS, C_REG, C_NONE, C_SOREG, 20, 2, 0, 0, 0},
+	Optab{AMOVBU, C_REG, C_NONE, C_SAUTO, 20, 2, REGSP, 0, 0},
+	Optab{AMOVBU, C_REG, C_NONE, C_SOREG, 20, 2, 0, 0, 0},
+	Optab{AMOVW, C_SAUTO, C_NONE, C_REG, 21, 2, REGSP, 0, 0},
+	Optab{AMOVW, C_SOREG, C_NONE, C_REG, 21, 2, 0, 0, 0},
+	Optab{AMOVBU, C_SAUTO, C_NONE, C_REG, 21, 2, REGSP, 0, 0},
+	Optab{AMOVBU, C_SOREG, C_NONE, C_REG, 21, 2, 0, 0, 0},
 	Optab{AMOVW, C_REG, C_NONE, C_LAUTO, 30, 8, REGSP, LTO, 0},
 	Optab{AMOVW, C_REG, C_NONE, C_LOREG, 30, 8, 0, LTO, 0},
 	Optab{AMOVW, C_REG, C_NONE, C_ADDR, 64, 8, 0, LTO | LPCREL, 4},
@@ -158,54 +163,54 @@ var optab = []Optab{
 	Optab{AMOVBU, C_LOREG, C_NONE, C_REG, 31, 8, 0, LFROM, 0},
 	Optab{AMOVBU, C_ADDR, C_NONE, C_REG, 65, 8, 0, LFROM | LPCREL, 4},
 	Optab{AMOVW, C_LACON, C_NONE, C_REG, 34, 8, REGSP, LFROM, 0},
-	Optab{AMOVW, C_PSR, C_NONE, C_REG, 35, 4, 0, 0, 0},
-	Optab{AMOVW, C_REG, C_NONE, C_PSR, 36, 4, 0, 0, 0},
-	Optab{AMOVW, C_RCON, C_NONE, C_PSR, 37, 4, 0, 0, 0},
-	Optab{AMOVM, C_REGLIST, C_NONE, C_SOREG, 38, 4, 0, 0, 0},
-	Optab{AMOVM, C_SOREG, C_NONE, C_REGLIST, 39, 4, 0, 0, 0},
-	Optab{ASWPW, C_SOREG, C_REG, C_REG, 40, 4, 0, 0, 0},
-	Optab{ARFE, C_NONE, C_NONE, C_NONE, 41, 4, 0, 0, 0},
-	Optab{AMOVF, C_FREG, C_NONE, C_FAUTO, 50, 4, REGSP, 0, 0},
-	Optab{AMOVF, C_FREG, C_NONE, C_FOREG, 50, 4, 0, 0, 0},
-	Optab{AMOVF, C_FAUTO, C_NONE, C_FREG, 51, 4, REGSP, 0, 0},
-	Optab{AMOVF, C_FOREG, C_NONE, C_FREG, 51, 4, 0, 0, 0},
+	Optab{AMOVW, C_PSR, C_NONE, C_REG, 35, 2, 0, 0, 0},
+	Optab{AMOVW, C_REG, C_NONE, C_PSR, 36, 2, 0, 0, 0},
+	Optab{AMOVW, C_RCON, C_NONE, C_PSR, 37, 2, 0, 0, 0},
+	Optab{AMOVM, C_REGLIST, C_NONE, C_SOREG, 38, 2, 0, 0, 0},
+	Optab{AMOVM, C_SOREG, C_NONE, C_REGLIST, 39, 2, 0, 0, 0},
+	Optab{ASWPW, C_SOREG, C_REG, C_REG, 40, 2, 0, 0, 0},
+	Optab{ARFE, C_NONE, C_NONE, C_NONE, 41, 2, 0, 0, 0},
+	Optab{AMOVF, C_FREG, C_NONE, C_FAUTO, 50, 2, REGSP, 0, 0},
+	Optab{AMOVF, C_FREG, C_NONE, C_FOREG, 50, 2, 0, 0, 0},
+	Optab{AMOVF, C_FAUTO, C_NONE, C_FREG, 51, 2, REGSP, 0, 0},
+	Optab{AMOVF, C_FOREG, C_NONE, C_FREG, 51, 2, 0, 0, 0},
 	Optab{AMOVF, C_FREG, C_NONE, C_LAUTO, 52, 12, REGSP, LTO, 0},
 	Optab{AMOVF, C_FREG, C_NONE, C_LOREG, 52, 12, 0, LTO, 0},
 	Optab{AMOVF, C_LAUTO, C_NONE, C_FREG, 53, 12, REGSP, LFROM, 0},
 	Optab{AMOVF, C_LOREG, C_NONE, C_FREG, 53, 12, 0, LFROM, 0},
 	Optab{AMOVF, C_FREG, C_NONE, C_ADDR, 68, 8, 0, LTO | LPCREL, 4},
 	Optab{AMOVF, C_ADDR, C_NONE, C_FREG, 69, 8, 0, LFROM | LPCREL, 4},
-	Optab{AADDF, C_FREG, C_NONE, C_FREG, 54, 4, 0, 0, 0},
-	Optab{AADDF, C_FREG, C_REG, C_FREG, 54, 4, 0, 0, 0},
-	Optab{AMOVF, C_FREG, C_NONE, C_FREG, 54, 4, 0, 0, 0},
-	Optab{AMOVW, C_REG, C_NONE, C_FCR, 56, 4, 0, 0, 0},
-	Optab{AMOVW, C_FCR, C_NONE, C_REG, 57, 4, 0, 0, 0},
-	Optab{AMOVW, C_SHIFT, C_NONE, C_REG, 59, 4, 0, 0, 0},
-	Optab{AMOVBU, C_SHIFT, C_NONE, C_REG, 59, 4, 0, 0, 0},
-	Optab{AMOVB, C_SHIFT, C_NONE, C_REG, 60, 4, 0, 0, 0},
-	Optab{AMOVBS, C_SHIFT, C_NONE, C_REG, 60, 4, 0, 0, 0},
-	Optab{AMOVW, C_REG, C_NONE, C_SHIFT, 61, 4, 0, 0, 0},
-	Optab{AMOVB, C_REG, C_NONE, C_SHIFT, 61, 4, 0, 0, 0},
-	Optab{AMOVBS, C_REG, C_NONE, C_SHIFT, 61, 4, 0, 0, 0},
-	Optab{AMOVBU, C_REG, C_NONE, C_SHIFT, 61, 4, 0, 0, 0},
-	Optab{ACASE, C_REG, C_NONE, C_NONE, 62, 4, 0, LPCREL, 8},
-	Optab{ABCASE, C_NONE, C_NONE, C_SBRA, 63, 4, 0, LPCREL, 0},
-	Optab{AMOVH, C_REG, C_NONE, C_HAUTO, 70, 4, REGSP, 0, 0},
-	Optab{AMOVH, C_REG, C_NONE, C_HOREG, 70, 4, 0, 0, 0},
-	Optab{AMOVHS, C_REG, C_NONE, C_HAUTO, 70, 4, REGSP, 0, 0},
-	Optab{AMOVHS, C_REG, C_NONE, C_HOREG, 70, 4, 0, 0, 0},
-	Optab{AMOVHU, C_REG, C_NONE, C_HAUTO, 70, 4, REGSP, 0, 0},
-	Optab{AMOVHU, C_REG, C_NONE, C_HOREG, 70, 4, 0, 0, 0},
-	Optab{AMOVB, C_HAUTO, C_NONE, C_REG, 71, 4, REGSP, 0, 0},
-	Optab{AMOVB, C_HOREG, C_NONE, C_REG, 71, 4, 0, 0, 0},
-	Optab{AMOVBS, C_HAUTO, C_NONE, C_REG, 71, 4, REGSP, 0, 0},
-	Optab{AMOVBS, C_HOREG, C_NONE, C_REG, 71, 4, 0, 0, 0},
-	Optab{AMOVH, C_HAUTO, C_NONE, C_REG, 71, 4, REGSP, 0, 0},
-	Optab{AMOVH, C_HOREG, C_NONE, C_REG, 71, 4, 0, 0, 0},
-	Optab{AMOVHS, C_HAUTO, C_NONE, C_REG, 71, 4, REGSP, 0, 0},
-	Optab{AMOVHS, C_HOREG, C_NONE, C_REG, 71, 4, 0, 0, 0},
-	Optab{AMOVHU, C_HAUTO, C_NONE, C_REG, 71, 4, REGSP, 0, 0},
-	Optab{AMOVHU, C_HOREG, C_NONE, C_REG, 71, 4, 0, 0, 0},
+	Optab{AADDF, C_FREG, C_NONE, C_FREG, 54, 2, 0, 0, 0},
+	Optab{AADDF, C_FREG, C_REG, C_FREG, 54, 2, 0, 0, 0},
+	Optab{AMOVF, C_FREG, C_NONE, C_FREG, 54, 2, 0, 0, 0},
+	Optab{AMOVW, C_REG, C_NONE, C_FCR, 56, 2, 0, 0, 0},
+	Optab{AMOVW, C_FCR, C_NONE, C_REG, 57, 2, 0, 0, 0},
+	Optab{AMOVW, C_SHIFT, C_NONE, C_REG, 59, 2, 0, 0, 0},
+	Optab{AMOVBU, C_SHIFT, C_NONE, C_REG, 59, 2, 0, 0, 0},
+	Optab{AMOVB, C_SHIFT, C_NONE, C_REG, 60, 2, 0, 0, 0},
+	Optab{AMOVBS, C_SHIFT, C_NONE, C_REG, 60, 2, 0, 0, 0},
+	Optab{AMOVW, C_REG, C_NONE, C_SHIFT, 61, 2, 0, 0, 0},
+	Optab{AMOVB, C_REG, C_NONE, C_SHIFT, 61, 2, 0, 0, 0},
+	Optab{AMOVBS, C_REG, C_NONE, C_SHIFT, 61, 2, 0, 0, 0},
+	Optab{AMOVBU, C_REG, C_NONE, C_SHIFT, 61, 2, 0, 0, 0},
+	Optab{ACASE, C_REG, C_NONE, C_NONE, 62, 2, 0, LPCREL, 8},
+	Optab{ABCASE, C_NONE, C_NONE, C_SBRA, 63, 2, 0, LPCREL, 0},
+	Optab{AMOVH, C_REG, C_NONE, C_HAUTO, 70, 2, REGSP, 0, 0},
+	Optab{AMOVH, C_REG, C_NONE, C_HOREG, 70, 2, 0, 0, 0},
+	Optab{AMOVHS, C_REG, C_NONE, C_HAUTO, 70, 2, REGSP, 0, 0},
+	Optab{AMOVHS, C_REG, C_NONE, C_HOREG, 70, 2, 0, 0, 0},
+	Optab{AMOVHU, C_REG, C_NONE, C_HAUTO, 70, 2, REGSP, 0, 0},
+	Optab{AMOVHU, C_REG, C_NONE, C_HOREG, 70, 2, 0, 0, 0},
+	Optab{AMOVB, C_HAUTO, C_NONE, C_REG, 71, 2, REGSP, 0, 0},
+	Optab{AMOVB, C_HOREG, C_NONE, C_REG, 71, 2, 0, 0, 0},
+	Optab{AMOVBS, C_HAUTO, C_NONE, C_REG, 71, 2, REGSP, 0, 0},
+	Optab{AMOVBS, C_HOREG, C_NONE, C_REG, 71, 2, 0, 0, 0},
+	Optab{AMOVH, C_HAUTO, C_NONE, C_REG, 71, 2, REGSP, 0, 0},
+	Optab{AMOVH, C_HOREG, C_NONE, C_REG, 71, 2, 0, 0, 0},
+	Optab{AMOVHS, C_HAUTO, C_NONE, C_REG, 71, 2, REGSP, 0, 0},
+	Optab{AMOVHS, C_HOREG, C_NONE, C_REG, 71, 2, 0, 0, 0},
+	Optab{AMOVHU, C_HAUTO, C_NONE, C_REG, 71, 2, REGSP, 0, 0},
+	Optab{AMOVHU, C_HOREG, C_NONE, C_REG, 71, 2, 0, 0, 0},
 	Optab{AMOVH, C_REG, C_NONE, C_LAUTO, 72, 8, REGSP, LTO, 0},
 	Optab{AMOVH, C_REG, C_NONE, C_LOREG, 72, 8, 0, LTO, 0},
 	Optab{AMOVH, C_REG, C_NONE, C_ADDR, 94, 8, 0, LTO | LPCREL, 4},
@@ -230,36 +235,36 @@ var optab = []Optab{
 	Optab{AMOVHU, C_LAUTO, C_NONE, C_REG, 73, 8, REGSP, LFROM, 0},
 	Optab{AMOVHU, C_LOREG, C_NONE, C_REG, 73, 8, 0, LFROM, 0},
 	Optab{AMOVHU, C_ADDR, C_NONE, C_REG, 93, 8, 0, LFROM | LPCREL, 4},
-	Optab{ALDREX, C_SOREG, C_NONE, C_REG, 77, 4, 0, 0, 0},
-	Optab{ASTREX, C_SOREG, C_REG, C_REG, 78, 4, 0, 0, 0},
+	Optab{ALDREX, C_SOREG, C_NONE, C_REG, 77, 2, 0, 0, 0},
+	Optab{ASTREX, C_SOREG, C_REG, C_REG, 78, 2, 0, 0, 0},
 	Optab{AMOVF, C_ZFCON, C_NONE, C_FREG, 80, 8, 0, 0, 0},
-	Optab{AMOVF, C_SFCON, C_NONE, C_FREG, 81, 4, 0, 0, 0},
+	Optab{AMOVF, C_SFCON, C_NONE, C_FREG, 81, 2, 0, 0, 0},
 	Optab{ACMPF, C_FREG, C_REG, C_NONE, 82, 8, 0, 0, 0},
 	Optab{ACMPF, C_FREG, C_NONE, C_NONE, 83, 8, 0, 0, 0},
-	Optab{AMOVFW, C_FREG, C_NONE, C_FREG, 84, 4, 0, 0, 0},
-	Optab{AMOVWF, C_FREG, C_NONE, C_FREG, 85, 4, 0, 0, 0},
+	Optab{AMOVFW, C_FREG, C_NONE, C_FREG, 84, 2, 0, 0, 0},
+	Optab{AMOVWF, C_FREG, C_NONE, C_FREG, 85, 2, 0, 0, 0},
 	Optab{AMOVFW, C_FREG, C_NONE, C_REG, 86, 8, 0, 0, 0},
 	Optab{AMOVWF, C_REG, C_NONE, C_FREG, 87, 8, 0, 0, 0},
-	Optab{AMOVW, C_REG, C_NONE, C_FREG, 88, 4, 0, 0, 0},
-	Optab{AMOVW, C_FREG, C_NONE, C_REG, 89, 4, 0, 0, 0},
-	Optab{ATST, C_REG, C_NONE, C_NONE, 90, 4, 0, 0, 0},
-	Optab{ALDREXD, C_SOREG, C_NONE, C_REG, 91, 4, 0, 0, 0},
-	Optab{ASTREXD, C_SOREG, C_REG, C_REG, 92, 4, 0, 0, 0},
-	Optab{APLD, C_SOREG, C_NONE, C_NONE, 95, 4, 0, 0, 0},
-	Optab{obj.AUNDEF, C_NONE, C_NONE, C_NONE, 96, 4, 0, 0, 0},
-	Optab{ACLZ, C_REG, C_NONE, C_REG, 97, 4, 0, 0, 0},
-	Optab{AMULWT, C_REG, C_REG, C_REG, 98, 4, 0, 0, 0},
+	Optab{AMOVW, C_REG, C_NONE, C_FREG, 88, 2, 0, 0, 0},
+	Optab{AMOVW, C_FREG, C_NONE, C_REG, 89, 2, 0, 0, 0},
+	Optab{ATST, C_REG, C_NONE, C_NONE, 90, 2, 0, 0, 0},
+	Optab{ALDREXD, C_SOREG, C_NONE, C_REG, 91, 2, 0, 0, 0},
+	Optab{ASTREXD, C_SOREG, C_REG, C_REG, 92, 2, 0, 0, 0},
+	Optab{APLD, C_SOREG, C_NONE, C_NONE, 95, 2, 0, 0, 0},
+	Optab{obj.AUNDEF, C_NONE, C_NONE, C_NONE, 96, 2, 0, 0, 0},
+	Optab{ACLZ, C_REG, C_NONE, C_REG, 97, 2, 0, 0, 0},
+	Optab{AMULWT, C_REG, C_REG, C_REG, 98, 2, 0, 0, 0},
 	Optab{AMULAWT, C_REG, C_REG, C_REGREG2, 99, 4, 0, 0, 0},
 	Optab{obj.AUSEFIELD, C_ADDR, C_NONE, C_NONE, 0, 0, 0, 0, 0},
 	Optab{obj.APCDATA, C_LCON, C_NONE, C_LCON, 0, 0, 0, 0, 0},
 	Optab{obj.AFUNCDATA, C_LCON, C_NONE, C_ADDR, 0, 0, 0, 0, 0},
 	Optab{obj.ANOP, C_NONE, C_NONE, C_NONE, 0, 0, 0, 0, 0},
-	Optab{obj.ADUFFZERO, C_NONE, C_NONE, C_SBRA, 5, 4, 0, 0, 0}, // same as ABL
-	Optab{obj.ADUFFCOPY, C_NONE, C_NONE, C_SBRA, 5, 4, 0, 0, 0}, // same as ABL
+	Optab{obj.ADUFFZERO, C_NONE, C_NONE, C_SBRA, 5, 2, 0, 0, 0}, // same as ABL
+	Optab{obj.ADUFFCOPY, C_NONE, C_NONE, C_SBRA, 5, 2, 0, 0, 0}, // same as ABL
 
-	Optab{ADATABUNDLE, C_NONE, C_NONE, C_NONE, 100, 4, 0, 0, 0},
+	Optab{ADATABUNDLE, C_NONE, C_NONE, C_NONE, 100, 2, 0, 0, 0},
 	Optab{ADATABUNDLEEND, C_NONE, C_NONE, C_NONE, 100, 0, 0, 0, 0},
-	Optab{obj.AXXX, C_NONE, C_NONE, C_NONE, 0, 4, 0, 0, 0},
+	Optab{obj.AXXX, C_NONE, C_NONE, C_NONE, 0, 2, 0, 0, 0},
 }
 
 var pool struct {
@@ -586,7 +591,7 @@ func span5(ctxt *obj.Link, cursym *obj.LSym) {
 
 	ctxt.Cursym = cursym
 
-	ctxt.Autosize = int32(p.To.Offset + 4)
+	ctxt.Autosize = int32(p.To.Offset + 2)
 	c := int32(0)
 
 	op = p
@@ -618,7 +623,7 @@ func span5(ctxt *obj.Link, cursym *obj.LSym) {
 			o = oplook(ctxt, p) // asmoutnacl might change p in rare cases
 		}
 
-		if m%4 != 0 || p.Pc%4 != 0 {
+		if m%2 != 0 || p.Pc%2 != 0 {
 			ctxt.Diag("!pc invalid: %v size=%d", p, m)
 		}
 
@@ -660,6 +665,9 @@ func span5(ctxt *obj.Link, cursym *obj.LSym) {
 
 	cursym.Size = int64(c)
 
+	fmt.Printf("cursym.Name: %v\n", cursym.Name)
+	fmt.Printf("cursym.Size: %v\n", cursym.Size)
+	
 	/*
 	 * if any procedure is large enough to
 	 * generate a large SBRA branch, then
@@ -723,7 +731,7 @@ func span5(ctxt *obj.Link, cursym *obj.LSym) {
 			//print("%v pc changed %d to %d in iter. %d\n", p, opc, (int32)p->pc, times);
 			c = int32(p.Pc + int64(m))
 
-			if m%4 != 0 || p.Pc%4 != 0 {
+			if m%2 != 0 || p.Pc%2 != 0 {
 				ctxt.Diag("pc invalid: %v size=%d", p, m)
 			}
 
@@ -742,12 +750,14 @@ func span5(ctxt *obj.Link, cursym *obj.LSym) {
 		}
 
 		cursym.Size = int64(c)
+		fmt.Printf("cursym.Size: %v\n", cursym.Size)
+		
 		if bflag == 0 {
 			break
 		}
 	}
 
-	if c%4 != 0 {
+	if c%2 != 0 {
 		ctxt.Diag("sym->size=%d, invalid", c)
 	}
 
@@ -764,7 +774,7 @@ func span5(ctxt *obj.Link, cursym *obj.LSym) {
 	}
 
 	p = cursym.Text
-	ctxt.Autosize = int32(p.To.Offset + 4)
+	ctxt.Autosize = int32(p.To.Offset + 2)
 	obj.Symgrow(ctxt, cursym, cursym.Size)
 
 	bp := cursym.P
@@ -785,7 +795,7 @@ func span5(ctxt *obj.Link, cursym *obj.LSym) {
 			}
 		}
 
-		if m%4 != 0 || p.Pc%4 != 0 {
+		if m%2 != 0 || p.Pc%2 != 0 {
 			ctxt.Diag("final stage: pc invalid: %v size=%d", p, m)
 		}
 
@@ -806,19 +816,27 @@ func span5(ctxt *obj.Link, cursym *obj.LSym) {
 			c += 4
 		}
 
-		for i = 0; i < m/4; i++ {
+		for i = 0; i < m/2; i++ {
 			v = int(out[i])
+
+			fmt.Printf("span5: %v %v\n", byte(v), byte(v >>8))
+			
 			bp[0] = byte(v)
 			bp = bp[1:]
-			bp[0] = byte(v >> 8)
+			bp[0] = byte(v >> 8)			
 			bp = bp[1:]
-			bp[0] = byte(v >> 16)
-			bp = bp[1:]
-			bp[0] = byte(v >> 24)
-			bp = bp[1:]
+
+			// thumb is 16 bit
+			// bp[0] = byte(v >> 16)
+			// bp = bp[1:]
+			// bp[0] = byte(v >> 24)
+			// bp = bp[1:]
+
 		}
 
 		c += int32(m)
+
+		
 	}
 }
 
@@ -999,6 +1017,9 @@ func immhalf(v int32) bool {
 }
 
 func aclass(ctxt *obj.Link, a *obj.Addr) int {
+
+	fmt.Printf("aclass a.Type %v\n", a.Type)
+
 	switch a.Type {
 	case obj.TYPE_NONE:
 		return C_NONE
@@ -1127,8 +1148,10 @@ func aclass(ctxt *obj.Link, a *obj.Addr) int {
 
 	case obj.TYPE_CONST,
 		obj.TYPE_ADDR:
+		fmt.Printf("a.Name: %v\n", a.Name)
 		switch a.Name {
 		case obj.TYPE_NONE:
+			fmt.Printf("a.Offset: %v\n", a.Offset)
 			ctxt.Instoffset = a.Offset
 			if a.Reg != 0 {
 				return aconsize(ctxt)
@@ -1212,7 +1235,7 @@ func oplook(ctxt *obj.Link, p *obj.Prog) *Optab {
 		o = oprange[r].stop /* just generate an error */
 	}
 
-	if false { /*debug['O']*/
+	if true { /*debug['O']*/
 		fmt.Printf("oplook %v %v %v %v\n", obj.Aconv(int(p.As)), DRconv(a1), DRconv(a2), DRconv(a3))
 		fmt.Printf("\t\t%d %d\n", p.From.Type, p.To.Type)
 	}
@@ -1513,7 +1536,7 @@ func asmout(ctxt *obj.Link, p *obj.Prog, o *Optab, out []uint32) {
 	o5 := uint32(0)
 	o6 := uint32(0)
 	ctxt.Armsize += int32(o.size)
-	if false { /*debug['P']*/
+	if true { /*debug['P']*/
 		fmt.Printf("%x: %v\ttype %d\n", uint32(p.Pc), p, o.type_)
 	}
 	switch o.type_ {
@@ -1527,8 +1550,13 @@ func asmout(ctxt *obj.Link, p *obj.Prog, o *Optab, out []uint32) {
 		}
 
 	case 1: /* op R,[R],R */
-		o1 = oprrr(ctxt, int(p.As), int(p.Scond))
 
+		// can't really dispatch to this type for thumb
+		// the following code is doing the ADD w #0 as move pseudo op
+		
+		
+		fmt.Println("case 1 op code")
+		
 		rf := int(p.From.Reg)
 		rt := int(p.To.Reg)
 		r := int(p.Reg)
@@ -1540,13 +1568,17 @@ func asmout(ctxt *obj.Link, p *obj.Prog, o *Optab, out []uint32) {
 		} else if r == 0 {
 			r = rt
 		}
-		o1 |= (uint32(rf)&15)<<0 | (uint32(r)&15)<<16 | (uint32(rt)&15)<<12
+
+		// TODO: should replace this with a ADD Rd, Rn # packer
+		o1 =  uint32((0x1c << 8) | ((rf & 0x7) << 3) | (rt & 0x7))
 
 	case 2: /* movbu $I,[R],R */
+
 		aclass(ctxt, &p.From)
 
-		o1 = oprrr(ctxt, int(p.As), int(p.Scond))
-		o1 |= uint32(immrot(uint32(ctxt.Instoffset)))
+//		o1 = oprrr(ctxt, int(p.As), int(p.Scond))
+//		o1 |= uint32(immrot(uint32(ctxt.Instoffset)))
+
 		rt := int(p.To.Reg)
 		r := int(p.Reg)
 		if p.To.Type == obj.TYPE_NONE {
@@ -1557,8 +1589,15 @@ func asmout(ctxt *obj.Link, p *obj.Prog, o *Optab, out []uint32) {
 		} else if r == 0 {
 			r = rt
 		}
-		o1 |= (uint32(r)&15)<<16 | (uint32(rt)&15)<<12
+		
+		//o1 |= (uint32(r)&15)<<16 | (uint32(rt)&15)<<12
 
+		// 001 00 rrr bbbb bbbb
+		fmt.Printf("type 2 literal: %v\n", ctxt.Instoffset)
+		o1 = 0x2000
+		o1 |= uint32((uint8(rt) & 0x7)) << 8
+		o1 |= uint32(ctxt.Instoffset & 0xff)
+		
 	case 3: /* add R<<[IR],[R],R */
 		o1 = mov(ctxt, p)
 
@@ -1682,11 +1721,13 @@ func asmout(ctxt *obj.Link, p *obj.Prog, o *Optab, out []uint32) {
 		}
 
 	case 12: /* movw $lcon, reg */
-		o1 = omvl(ctxt, p, &p.From, int(p.To.Reg))
+//		o1 = omvl(ctxt, p, &p.From, int(p.To.Reg))
+		fmt.Printf("to reg %v\n", p.To.Reg)
+		o1 = uint32(omvl_thumb(ctxt, p, &p.From, int(p.To.Reg)))
 
-		if o.flag&LPCREL != 0 {
-			o2 = oprrr(ctxt, AADD, int(p.Scond)) | (uint32(p.To.Reg)&15)<<0 | (REGPC&15)<<16 | (uint32(p.To.Reg)&15)<<12
-		}
+//		if o.flag&LPCREL != 0 {
+//			o2 = oprrr(ctxt, AADD, int(p.Scond)) | (uint32(p.To.Reg)&15)<<0 | (REGPC&15)<<16 | (uint32(p.To.Reg)&15)<<12
+//		}
 
 	case 13: /* op $lcon, [R], R */
 		o1 = omvl(ctxt, p, &p.From, REGTMP)
@@ -1770,7 +1811,12 @@ func asmout(ctxt *obj.Link, p *obj.Prog, o *Optab, out []uint32) {
 		if r == 0 {
 			r = int(o.param)
 		}
-		o1 = osr(ctxt, int(p.As), int(p.From.Reg), int32(ctxt.Instoffset), r, int(p.Scond))
+		//		o1 = osr(ctxt, int(p.As), int(p.From.Reg), int32(ctxt.Instoffset), r, int(p.Scond))
+
+		o1 = 0x5000
+		o1 |= (uint32(p.To.Reg) & 0x7) << 3
+		o1 |= (uint32(p.From.Reg) & 0x7)
+		
 
 	case 21: /* mov/movbu O(R),R -> lr */
 		aclass(ctxt, &p.From)
@@ -1779,10 +1825,11 @@ func asmout(ctxt *obj.Link, p *obj.Prog, o *Optab, out []uint32) {
 		if r == 0 {
 			r = int(o.param)
 		}
-		o1 = olr(ctxt, int32(ctxt.Instoffset), r, int(p.To.Reg), int(p.Scond))
-		if p.As != AMOVW {
-			o1 |= 1 << 22
-		}
+
+		o1 = 0x5800
+		o1 |= (uint32(p.From.Reg) & 0x7) << 3
+		o1 |= (uint32(p.To.Reg) & 0x7)
+		
 
 	case 30: /* mov/movb/movbu R,L(R) */
 		o1 = omvl(ctxt, p, &p.To, REGTMP)
@@ -2445,6 +2492,15 @@ func mov(ctxt *obj.Link, p *obj.Prog) uint32 {
 	return o1
 }
 
+func oprrr_thumb(ctxt *obj.Link, a int, sc int) uint32 {
+	o := uint32(sc)
+	switch a {
+	case AMVN:
+		return 0x48 
+	}
+	return o
+}
+
 func oprrr(ctxt *obj.Link, a int, sc int) uint32 {
 	o := ((uint32(sc) & C_SCOND) ^ C_SCOND_XOR) << 28
 	if sc&C_SBIT != 0 {
@@ -2809,6 +2865,27 @@ func omvl(ctxt *obj.Link, p *obj.Prog, a *obj.Addr, dr int) uint32 {
 
 	return o1
 }
+
+func omvl_thumb(ctxt *obj.Link, p *obj.Prog, a *obj.Addr, dr int) uint32 {
+	var o1 uint32
+
+	var v int32
+	if p.Pcond == nil {
+	} else {
+		v = int32(p.Pcond.Pc - p.Pc - 8) + 2
+		fmt.Printf("omvl_thumb v %v\n", v)
+	}
+
+//	o1 = oprrr_thumb(ctxt, AMVN, int(p.Scond)&C_SCOND)
+	o1 = uint32(0x4800)
+	fmt.Printf("omvl_thumb: dr %v\n", dr & 0xf)
+	o1 |= uint32(uint8(dr & 0xf) & 0x7) << 8
+	o1 |= uint32(v/4)
+	
+	fmt.Printf("omvl_thumb: %#v\n", o1)
+	return o1
+}
+
 
 func chipzero5(ctxt *obj.Link, e float64) int {
 	// We use GOARM=7 to gate the use of VFPv3 vmov (imm) instructions.
