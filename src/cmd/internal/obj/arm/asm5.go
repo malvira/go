@@ -105,9 +105,10 @@ var optab = []Optab{
 	Optab{ASWI, C_NONE, C_NONE, C_NONE, 10, 2, 0, 0, 0},
 	Optab{ASWI, C_NONE, C_NONE, C_LOREG, 10, 2, 0, 0, 0},
 	Optab{ASWI, C_NONE, C_NONE, C_LCON, 10, 2, 0, 0, 0},
-	Optab{AWORD, C_NONE, C_NONE, C_LCON, 11, 2, 0, 0, 0},
-	Optab{AWORD, C_NONE, C_NONE, C_LCONADDR, 11, 2, 0, 0, 0},
-	Optab{AWORD, C_NONE, C_NONE, C_ADDR, 11, 2, 0, 0, 0},
+
+	Optab{AWORD, C_NONE, C_NONE, C_LCON, 11, 4, 0, 0, 0},
+	Optab{AWORD, C_NONE, C_NONE, C_LCONADDR, 11, 4, 0, 0, 0},
+	Optab{AWORD, C_NONE, C_NONE, C_ADDR, 11, 4, 0, 0, 0},
 
 	Optab{AMOVW, C_LCON, C_NONE, C_REG, 12, 2, 0, LFROM, 0},
 	Optab{AMOVW, C_LCONADDR, C_NONE, C_REG, 12, 2, 0, LFROM | LPCREL, 4},
@@ -591,7 +592,7 @@ func span5(ctxt *obj.Link, cursym *obj.LSym) {
 
 	ctxt.Cursym = cursym
 
-	ctxt.Autosize = int32(p.To.Offset + 2)
+	ctxt.Autosize = int32(p.To.Offset + 4)
 	c := int32(0)
 
 	op = p
@@ -660,6 +661,7 @@ func span5(ctxt *obj.Link, cursym *obj.LSym) {
 		if p.As == AMOVW && p.To.Type == obj.TYPE_REG && p.To.Reg == REGPC && p.Scond&C_SCOND == C_SCOND_NONE {
 			flushpool(ctxt, p, 0, 0)
 		}
+		fmt.Printf("adding size %v\n", m)
 		c += int32(m)
 	}
 
@@ -775,6 +777,7 @@ func span5(ctxt *obj.Link, cursym *obj.LSym) {
 
 	p = cursym.Text
 	ctxt.Autosize = int32(p.To.Offset + 2)
+	// adding more to the sym... not sure why the size is messed up now
 	obj.Symgrow(ctxt, cursym, cursym.Size)
 
 	bp := cursym.P
@@ -819,18 +822,22 @@ func span5(ctxt *obj.Link, cursym *obj.LSym) {
 		for i = 0; i < m/2; i++ {
 			v = int(out[i])
 
-			fmt.Printf("span5: %v %v\n", byte(v), byte(v >>8))
+			fmt.Printf("span5: %x\n", v)
 			
+			// thumb is 16 bit
 			bp[0] = byte(v)
 			bp = bp[1:]
 			bp[0] = byte(v >> 8)			
 			bp = bp[1:]
 
-			// thumb is 16 bit
-			// bp[0] = byte(v >> 16)
-			// bp = bp[1:]
-			// bp[0] = byte(v >> 24)
-			// bp = bp[1:]
+			// needed for WORD
+			if m == 4 {
+				bp[0] = byte(v >> 16)
+				bp = bp[1:]
+				bp[0] = byte(v >> 24)
+				bp = bp[1:]
+				break
+			}
 
 		}
 
@@ -1567,10 +1574,22 @@ func asmout(ctxt *obj.Link, p *obj.Prog, o *Optab, out []uint32) {
 			r = 0
 		} else if r == 0 {
 			r = rt
+
 		}
 
-		// TODO: should replace this with a ADD Rd, Rn # packer
-		o1 =  uint32((0x1c << 8) | ((rf & 0x7) << 3) | (rt & 0x7))
+		switch p.As {
+		case AMOVB, AMOVH, AMOVW, AMVN:
+			// TODO: should replace this with a ADD Rd, Rn # packer
+			o1 =  uint32((0x1c << 8) | ((rf & 0x7) << 3) | (rt & 0x7))
+		case AORR:
+			o1 = 0x4300
+			o1 |= uint32(rf & 0x7) << 3 | uint32(rt & 0x7)
+		case AADD:
+			// 0001 10 0 rrr rrr ddd
+			fmt.Printf("AADD %v %v %v\n", rf, rt, r)
+			o1 = 0x1800
+			o1 |= uint32(uint8(rt) & 0x7) << 6 | uint32(uint8(rf) & 0x7) << 3 | uint32(uint8(r))
+		}
 
 	case 2: /* movbu $I,[R],R */
 
@@ -1595,7 +1614,16 @@ func asmout(ctxt *obj.Link, p *obj.Prog, o *Optab, out []uint32) {
 		// 001 00 rrr bbbb bbbb
 		fmt.Printf("type 2 literal: %v\n", ctxt.Instoffset)
 		o1 = 0x2000
-		o1 |= uint32((uint8(rt) & 0x7)) << 8
+
+		switch p.As {
+		case AMOVB, AMOVW:
+			o1 |= uint32((uint8(rt) & 0x7)) << 8
+
+		case ACMP:
+			o1 |= 1 << 11
+			o1 |= uint32((uint8(r) & 0x7)) << 8
+		}
+
 		o1 |= uint32(ctxt.Instoffset & 0xff)
 		
 	case 3: /* add R<<[IR],[R],R */
@@ -1631,7 +1659,32 @@ func asmout(ctxt *obj.Link, p *obj.Prog, o *Optab, out []uint32) {
 		if p.Pcond != nil {
 			v = int32((p.Pcond.Pc - ctxt.Pc) - 8)
 		}
-		o1 |= (uint32(v) >> 2) & 0xffffff
+		//		o1 |= (uint32(v) >> 2) & 0xffffff
+
+		o1 = 0xd000
+		var mask uint32
+		switch p.As {
+		case ABGE:
+			o1 |= 0xa << 8
+			mask = 0xff
+		case AB:
+			o1 = 0xe000
+			mask = 0x7ff
+		}
+
+		if v < 0 {
+			o1 |= (^uint32(-v/4 + 1) + 1) & mask
+		} else {
+			o1 |= uint32(v) & mask
+		}
+		
+		fmt.Printf("branch offset: %v\n", v)
+		fmt.Printf("branch offset complement: %x\n", (^uint32(-v/4 + 1) + 1) & 0x7ff)
+		
+
+
+		fmt.Printf("branch o1: %x\n", o1)
+		
 
 	case 6: /* b ,O(R) -> add $O,R,PC */
 		aclass(ctxt, &p.To)
@@ -1719,7 +1772,8 @@ func asmout(ctxt *obj.Link, p *obj.Prog, o *Optab, out []uint32) {
 			}
 			o1 = 0
 		}
-
+		fmt.Printf("word is: %x\n", o1)
+		
 	case 12: /* movw $lcon, reg */
 //		o1 = omvl(ctxt, p, &p.From, int(p.To.Reg))
 		fmt.Printf("to reg %v\n", p.To.Reg)
@@ -1730,22 +1784,21 @@ func asmout(ctxt *obj.Link, p *obj.Prog, o *Optab, out []uint32) {
 //		}
 
 	case 13: /* op $lcon, [R], R */
-		o1 = omvl(ctxt, p, &p.From, REGTMP)
 
-		if o1 == 0 {
-			break
+		o1 = uint32(0x2000)
+		switch p.As {
+		case ACMP:
+			o1 |= 0x1 << 11 
 		}
-		o2 = oprrr(ctxt, int(p.As), int(p.Scond))
-		o2 |= REGTMP & 15
-		r := int(p.Reg)
-		if p.As == AMOVW || p.As == AMVN {
-			r = 0
-		} else if r == 0 {
-			r = int(p.To.Reg)
-		}
-		o2 |= (uint32(r) & 15) << 16
-		if p.To.Type != obj.TYPE_NONE {
-			o2 |= (uint32(p.To.Reg) & 15) << 12
+
+		o1 |= uint32(p.To.Reg) << 7
+
+		a := &p.To
+		if p.Pcond == nil {
+			aclass(ctxt, a)
+			v := immrot(^uint32(ctxt.Instoffset))
+			fmt.Printf("type 13 literal %v\n", v)
+			o1 |= uint32(v)
 		}
 
 	case 14: /* movb/movbu/movh/movhu R,R */
