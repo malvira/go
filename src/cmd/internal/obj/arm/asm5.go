@@ -77,15 +77,20 @@ var optab = []Optab{
 	Optab{AADD, C_REG, C_NONE, C_REG, 1, 2, 0, 0, 0},
 	Optab{AMVN, C_REG, C_NONE, C_REG, 1, 2, 0, 0, 0},
 	Optab{ACMP, C_REG, C_REG, C_NONE, 1, 2, 0, 0, 0},
-	Optab{AADD, C_RCON, C_REG, C_REG, 2, 2, 0, 0, 0},
-	Optab{AADD, C_RCON, C_NONE, C_REG, 2, 2, 0, 0, 0},
-	Optab{AMOVW, C_RCON, C_NONE, C_REG, 2, 2, 0, 0, 0},
-	Optab{AMVN, C_RCON, C_NONE, C_REG, 2, 2, 0, 0, 0},
+
+	Optab{AADD, C_RCON, C_REG, C_REG, 2, 4, 0, 0, 0},
+	Optab{AADD, C_RCON, C_NONE, C_REG, 2, 4, 0, 0, 0},
+	Optab{AMOVW, C_RCON, C_NONE, C_REG, 2, 4, 0, 0, 0},
+	Optab{AMVN, C_RCON, C_NONE, C_REG, 2, 4, 0, 0, 0},
+
 	Optab{ACMP, C_RCON, C_REG, C_NONE, 2, 2, 0, 0, 0},
+
 	Optab{AADD, C_SHIFT, C_REG, C_REG, 3, 2, 0, 0, 0},
 	Optab{AADD, C_SHIFT, C_NONE, C_REG, 3, 2, 0, 0, 0},
 	Optab{AMVN, C_SHIFT, C_NONE, C_REG, 3, 2, 0, 0, 0},
+
 	Optab{ACMP, C_SHIFT, C_REG, C_NONE, 3, 2, 0, 0, 0},
+
 	Optab{AMOVW, C_RACON, C_NONE, C_REG, 4, 2, REGSP, 0, 0},
 	Optab{AB, C_NONE, C_NONE, C_SBRA, 5, 2, 0, LPOOL, 0},
 	Optab{ABL, C_NONE, C_NONE, C_SBRA, 5, 2, 0, 0, 0},
@@ -120,7 +125,9 @@ var optab = []Optab{
 	Optab{AADD, C_LCON, C_REG, C_REG, 13, 8, 0, LFROM, 0},
 	Optab{AADD, C_LCON, C_NONE, C_REG, 13, 8, 0, LFROM, 0},
 	Optab{AMVN, C_LCON, C_NONE, C_REG, 13, 8, 0, LFROM, 0},
-	Optab{ACMP, C_LCON, C_REG, C_NONE, 13, 8, 0, LFROM, 0},
+
+	Optab{ACMP, C_LCON, C_REG, C_NONE, 13, 2, 0, LFROM, 0},
+
 	Optab{AMOVB, C_REG, C_NONE, C_REG, 1, 2, 0, 0, 0},
 	Optab{AMOVBS, C_REG, C_NONE, C_REG, 14, 8, 0, 0, 0},
 	Optab{AMOVBU, C_REG, C_NONE, C_REG, 58, 2, 0, 0, 0},
@@ -1612,19 +1619,68 @@ func asmout(ctxt *obj.Link, p *obj.Prog, o *Optab, out []uint32) {
 		//o1 |= (uint32(r)&15)<<16 | (uint32(rt)&15)<<12
 
 		// 001 00 rrr bbbb bbbb
-		fmt.Printf("type 2 literal: %v\n", ctxt.Instoffset)
-		o1 = 0x2000
+
+		// if (ctxt.Instoffset < 255) {
+			
+		// 	fmt.Printf("type 2 literal: %v\n", ctxt.Instoffset)
+		// 	o1 = 0x2000
+			
+		// 	switch p.As {
+		// 	case AMOVB, AMOVW:
+		// 		o1 |= uint32((uint8(rt) & 0x7)) << 8
+				
+		// 	case ACMP:
+		// 		o1 |= 1 << 11
+		// 		o1 |= uint32((uint8(r) & 0x7)) << 8
+		// 	}
+			
+		// 	o1 |= uint32((ctxt.Instoffset) & 0xff)
+		// } else { // size here is going to be wrong...
+		// }
+
+		// encode all of these at T32 mov
+		// 111 10 10 0010 0 1111 0 110 |  0010 1000 | 0000
+		// 1111 0h10 0100 hhhh  | 0hhh rrrr llll llll
 
 		switch p.As {
-		case AMOVB, AMOVW:
-			o1 |= uint32((uint8(rt) & 0x7)) << 8
 
 		case ACMP:
+			o1 = 0x2000
 			o1 |= 1 << 11
 			o1 |= uint32((uint8(r) & 0x7)) << 8
+			o1 |= uint32((ctxt.Instoffset) & 0xff)
+			
+		case AMOVW:
+			fmt.Printf("off: %x u16 %x\n", ctxt.Instoffset, uint16(ctxt.Instoffset))
+			switch {
+			case ctxt.Instoffset < 65536:
+				h := uint8(uint16(ctxt.Instoffset) >> 8)
+				l := uint8(uint16(ctxt.Instoffset) & 0xff)
+				fmt.Printf("h 0x%x l 0x%x\n", h, l)
+				fmt.Printf("r %v rt %v\n", r, rt)
+				
+				o1 = 0
+				o1 |= uint32(l)
+				o1 |= uint32(rt) << 8
+				o1 |= uint32(h & 0x7) << 12
+				
+				o1 = o1 << 16
+				
+				fmt.Printf("o1 %x\n", o1)
+				
+				o1 |= 0xf240
+				h = h >> 3
+				o1 |= uint32(h & 0x0f)
+				h = h >> 4
+				fmt.Printf("h %x\n", h)
+				o1 |= uint32(h) << 10
+				
+			case ctxt.Instoffset >= 65536:
+				/* hack --- hardcode the answer we need rather than implement the general */
+				/* amr modified literal stuff */
+				o1 = 0x1100f44f
+			}
 		}
-
-		o1 |= uint32(ctxt.Instoffset & 0xff)
 		
 	case 3: /* add R<<[IR],[R],R */
 		o1 = mov(ctxt, p)
@@ -1673,16 +1729,13 @@ func asmout(ctxt *obj.Link, p *obj.Prog, o *Optab, out []uint32) {
 		}
 
 		if v < 0 {
-			o1 |= (^uint32(-v/4 + 1) + 1) & mask
+			o1 |= (^uint32(-v/2 - 2) + 1) & mask
 		} else {
-			o1 |= uint32(v) & mask
+			o1 |= uint32(v/2 + 2) & mask
 		}
 		
 		fmt.Printf("branch offset: %v\n", v)
-		fmt.Printf("branch offset complement: %x\n", (^uint32(-v/4 + 1) + 1) & 0x7ff)
-		
-
-
+		fmt.Printf("branch offset complement: %x\n", (^uint32(-v/2 - 2) + 1) & 0x7ff)
 		fmt.Printf("branch o1: %x\n", o1)
 		
 
@@ -1772,6 +1825,7 @@ func asmout(ctxt *obj.Link, p *obj.Prog, o *Optab, out []uint32) {
 			}
 			o1 = 0
 		}
+		fmt.Printf("pc is: %x\n", ctxt.Pc)
 		fmt.Printf("word is: %x\n", o1)
 		
 	case 12: /* movw $lcon, reg */
@@ -2083,18 +2137,24 @@ func asmout(ctxt *obj.Link, p *obj.Prog, o *Optab, out []uint32) {
 		o1 |= ((uint32(p.From.Reg)&1)+1)<<21 | (uint32(p.To.Reg)&15)<<12 | 1<<20
 
 	case 58: /* movbu R,R */
-		o1 = oprrr(ctxt, AAND, int(p.Scond))
+		// o1 = oprrr(ctxt, AAND, int(p.Scond))
 
-		o1 |= uint32(immrot(0xff))
+		// o1 |= uint32(immrot(0xff))
 		rt := int(p.To.Reg)
 		r := int(p.From.Reg)
 		if p.To.Type == obj.TYPE_NONE {
-			rt = 0
+		 	rt = 0
 		}
 		if r == 0 {
-			r = rt
+		 	r = rt
 		}
-		o1 |= (uint32(r)&15)<<16 | (uint32(rt)&15)<<12
+		// o1 |= (uint32(r)&15)<<16 | (uint32(rt)&15)<<12
+
+		// add w 0 literal
+		// 0001 110 000 rrr rrr
+		o1 = 0x1c00
+		o1 |= (uint32((uint8(rt) & 0x7)) << 3) | (uint32(uint8(r)) & 0x7)
+		
 
 	case 59: /* movw/bu R<<I(R),R -> ldr indexed */
 		if p.From.Reg == 0 {
@@ -2933,7 +2993,7 @@ func omvl_thumb(ctxt *obj.Link, p *obj.Prog, a *obj.Addr, dr int) uint32 {
 	o1 = uint32(0x4800)
 	fmt.Printf("omvl_thumb: dr %v\n", dr & 0xf)
 	o1 |= uint32(uint8(dr & 0xf) & 0x7) << 8
-	o1 |= uint32(v/4)
+	o1 |= uint32(v/4 + 1)
 	
 	fmt.Printf("omvl_thumb: %#v\n", o1)
 	return o1
